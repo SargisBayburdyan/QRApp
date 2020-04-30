@@ -40,6 +40,13 @@ const useStyles = (theme) => ({
     marginLeft: theme.spacing(26),
     backgroundColor: theme.palette.secondary.main,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
 });
 
 export default useStyles;

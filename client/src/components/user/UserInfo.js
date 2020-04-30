@@ -3,6 +3,10 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Link from "@material-ui/core/Link";
@@ -24,11 +28,6 @@ const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 );
 
-//Regular Expression for password validation
-const passwordRegex = RegExp(
-  /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/
-);
-
 //form validation
 const formValid = ({ formErrors, ...rest }) => {
   let valid = true;
@@ -44,27 +43,36 @@ const formValid = ({ formErrors, ...rest }) => {
   return valid;
 };
 
-class Signup extends React.Component {
+class UserInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      title: null,
       firstName: null,
       lastName: null,
-      email: null,
-      username: null,
-      password: null,
-      confirmPassword: null,
+      emailPersonal: null,
+      emailBusinness: null,
+      phoneNumberPersonal: null,
+      phoneNumberBusinness: null,
+      street: null,
+      appartment: null,
+      zipCode: null,
       country: null,
-      //birthDate: null,
+      birthDate: null,
+      website: null,
       formErrors: {
+        title: "",
         firstName: "",
         lastName: "",
         email: "",
-        username: "",
-        password: "",
-        confirmPassword: "",
+        phone: "",
+        street: "",
+        appartment: "",
+        zipCode: "",
+        country: "",
+        birthDate: "",
       },
-      sendEmail: false,
+      isLoading: false,
       checked: false,
     };
   }
@@ -73,7 +81,7 @@ class Signup extends React.Component {
     e.preventDefault();
 
     //send email if the form is valid
-    this.setState({ sendEmail: true });
+    this.setState({ isLoading: true });
 
     if (formValid(this.state)) {
       console.log("FORM IS VALID");
@@ -93,13 +101,10 @@ class Signup extends React.Component {
     })
       .then((res) => res.json())
       .then((data) => {
-        this.setState({ sendEmail: false });
-        notify.show(data.msg);
-        this.form.reset();
+        // notify.show(data.msg);
+        // this.form.reset();
       })
       .catch((err) => console.log(err));
-
-    console.log(this.state);
     this.setState({ checked: false });
   };
 
@@ -119,24 +124,15 @@ class Signup extends React.Component {
         formErrors.lastName =
           value.length < 3 ? "Please insert more than 3 characters" : "";
         break;
-      case "email":
+      case "emailPersonal":
         formErrors.email = emailRegex.test(value)
           ? ""
           : "Please enter the valid email address";
         break;
-      case "username":
-        formErrors.username =
-          value.length < 6 ? "Please insert more than 6 characters" : "";
-        break;
-      case "password":
-        formErrors.password = passwordRegex.test(value)
+      case "emailBusinness":
+        formErrors.email = emailRegex.test(value)
           ? ""
-          : "Your Password needs to contain minimum 8 characters," +
-            "  one uppercase letter, one lowercase letter, one number and one special character";
-        break;
-      case "confirmPassword":
-        formErrors.confirmPassword =
-          value !== this.state.password ? "Passwords don't match" : "";
+          : "Please enter the valid email address";
         break;
       default:
         break;
@@ -150,7 +146,7 @@ class Signup extends React.Component {
   };
 
   render() {
-    const { formErrors, sendEmail, checked } = this.state;
+    const { formErrors, isLoading, checked, title } = this.state;
 
     return (
       <Fragment>
@@ -161,7 +157,7 @@ class Signup extends React.Component {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Create Account
+              Personal Information
             </Typography>
             <form
               className={this.props.classes.form}
@@ -171,6 +167,22 @@ class Signup extends React.Component {
             >
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
+                  <FormControl className={this.props.classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Title</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={title}
+                      onChange={this.handleChange}
+                    >
+                      <MenuItem value="Mr.">Mr.</MenuItem>
+                      <MenuItem value="Mrs.">Mrs.</MenuItem>
+                      <MenuItem value="Dr.">Dr.</MenuItem>
+                      <MenuItem value="Prof. Dr.">Prof. Dr.</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
                   <TextField
                     className={formErrors.firstName.length > 0 ? "error" : null}
                     autoComplete="fname"
@@ -189,7 +201,7 @@ class Signup extends React.Component {
                     </span>
                   )}
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
                   <TextField
                     className={formErrors.lastName.length > 0 ? "error" : null}
                     variant="outlined"
@@ -214,7 +226,7 @@ class Signup extends React.Component {
                     required
                     fullWidth
                     id="email"
-                    label="Email Address"
+                    label="Personal Email Address"
                     name="email"
                     autoComplete="email"
                     onChange={this.handleChange}
@@ -227,56 +239,19 @@ class Signup extends React.Component {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                    className={formErrors.username.length > 0 ? "error" : null}
+                    className={formErrors.email.length > 0 ? "error" : null}
                     variant="outlined"
                     required
                     fullWidth
-                    id="username"
-                    label="Username"
-                    name="username"
+                    id="email"
+                    label="Businness Email Address"
+                    name="email"
+                    autoComplete="email"
                     onChange={this.handleChange}
                   />
-                  {formErrors.username.length > 0 && (
+                  {formErrors.email.length > 0 && (
                     <span className={this.props.classes.errormessage}>
-                      {formErrors.username}
-                    </span>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    className={formErrors.password.length > 0 ? "error" : null}
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    onChange={this.handleChange}
-                  />
-                  {formErrors.password.length > 0 && (
-                    <span className={this.props.classes.errormessage}>
-                      {formErrors.password}
-                    </span>
-                  )}
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    className={
-                      formErrors.confirmPassword.length > 0 ? "error" : null
-                    }
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="confirmPassword"
-                    label="Confirm Password"
-                    type="password"
-                    id="password"
-                    onChange={this.handleChange}
-                  />
-                  {formErrors.confirmPassword.length > 0 && (
-                    <span className={this.props.classes.errormessage}>
-                      {formErrors.confirmPassword}
+                      {formErrors.email}
                     </span>
                   )}
                 </Grid>
@@ -290,17 +265,6 @@ class Signup extends React.Component {
                     id="country"
                   />
                 </Grid>
-                {/*<Grid item xs={12}>
-                  <TextField
-                    variant="outlined"
-                    required
-                    fullWidth
-                    name="date"
-                    type="date"
-                    id="date"
-                  />
-                </Grid>
-                  */}
                 <Grid item xs={12}>
                   <FormControlLabel
                     control={
@@ -316,24 +280,17 @@ class Signup extends React.Component {
                 </Grid>
               </Grid>
               <Button
-                disabled={(sendEmail, !checked)}
+                disabled={(isLoading, !checked)}
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
                 className={this.props.classes.submit}
               >
-                Sign Up
+                Generate QR Code
                 <span>&nbsp;&nbsp;</span>
-                {sendEmail ? <Spinner size="1x" /> : ""}
+                {isLoading ? <Spinner size="1x" /> : ""}
               </Button>
-              <Grid container justify="flex-end">
-                <Grid item>
-                  <Link href="#" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                </Grid>
-              </Grid>
             </form>
           </div>
           <Box mt={5}>
@@ -345,4 +302,4 @@ class Signup extends React.Component {
   }
 }
 
-export default withStyles(useStyles)(Signup);
+export default withStyles(useStyles)(UserInfo);

@@ -9,7 +9,6 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
@@ -18,6 +17,13 @@ import Container from "@material-ui/core/Container";
 import { withStyles } from "@material-ui/core";
 import useStyles from "../../useStyles";
 import { notify } from "react-notify-toast";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker,
+} from "@material-ui/pickers";
+
+import "date-fns";
+import DateFnsUtils from "@date-io/date-fns";
 
 //Components
 import Copyright from "../Copyright";
@@ -26,6 +32,14 @@ import Spinner from "../Spinner";
 //Regular Expression for email validation
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+);
+
+const phoneNumberRegex = RegExp(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/);
+
+const zipCodeRegex = RegExp(/^[0-9]{1,6}$/);
+
+const websiteRegex = RegExp(
+  /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
 );
 
 //form validation
@@ -51,26 +65,29 @@ class UserInfo extends React.Component {
       firstName: null,
       lastName: null,
       emailPersonal: null,
-      emailBusinness: null,
-      phoneNumberPersonal: null,
-      phoneNumberBusinness: null,
+      emailBusiness: null,
+      phonePersonal: null,
+      phoneBusiness: null,
       street: null,
-      appartment: null,
-      zipCode: null,
+      zipcode: null,
       country: null,
-      birthDate: null,
+      birthDate: new Date(),
       website: null,
+      company: null,
       formErrors: {
         title: "",
         firstName: "",
         lastName: "",
-        email: "",
-        phone: "",
+        emailPersonal: "",
+        emailBusiness: "",
+        phonePersonal: "",
+        phoneBusiness: "",
         street: "",
-        appartment: "",
-        zipCode: "",
+        zipcode: "",
         country: "",
         birthDate: "",
+        website: "",
+        company: "",
       },
       isLoading: false,
       checked: false,
@@ -90,22 +107,22 @@ class UserInfo extends React.Component {
     }
 
     //post the form input to the server
-    fetch("/signup", {
+    fetch("/userdata", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-
       body: JSON.stringify(this.state),
     })
-      .then((res) => res.json())
+      .then((res) => res)
       .then((data) => {
-        // notify.show(data.msg);
-        // this.form.reset();
+        notify.show(data.msg);
+        this.form.reset();
       })
       .catch((err) => console.log(err));
     this.setState({ checked: false });
+    console.log(this.state);
   };
 
   handleChange = (e) => {
@@ -125,19 +142,59 @@ class UserInfo extends React.Component {
           value.length < 3 ? "Please insert more than 3 characters" : "";
         break;
       case "emailPersonal":
-        formErrors.email = emailRegex.test(value)
+        formErrors.emailPersonal = emailRegex.test(value)
           ? ""
           : "Please enter the valid email address";
         break;
-      case "emailBusinness":
-        formErrors.email = emailRegex.test(value)
+      case "emailBusiness":
+        formErrors.emailBusiness = emailRegex.test(value)
           ? ""
           : "Please enter the valid email address";
+        break;
+      case "phonePersonal":
+        formErrors.phonePersonal = phoneNumberRegex.test(value)
+          ? ""
+          : "Please enter the valid phone number";
+        break;
+      case "numberBusiness":
+        formErrors.phoneBusiness = phoneNumberRegex.test(value)
+          ? ""
+          : "Please enter the valid phone number";
+        break;
+      case "street":
+        formErrors.street =
+          value.length < 50 ? "" : "Please enter less than 50 characters";
+        break;
+      case "zipcode":
+        formErrors.zipcode = zipCodeRegex.test(value)
+          ? ""
+          : "Please enter the zip code";
+        break;
+      case "website":
+        formErrors.website = websiteRegex.test(value)
+          ? ""
+          : "Please enter the valid URL";
+        break;
+      case "company":
+        formErrors.company =
+          value.length < 20 ? "" : "Please enter less than 20 characters";
         break;
       default:
         break;
     }
+
     this.setState({ formErrors, [name]: value });
+  };
+
+  handleTitleChange = (e) => {
+    e.preventDefault();
+
+    this.setState({ title: e.target.value });
+  };
+
+  handleDateChange = (date) => {
+    date = JSON.stringify(date);
+    this.setState({ birthDate: date });
   };
 
   handleCheckboxStateChange = (e) => {
@@ -146,8 +203,7 @@ class UserInfo extends React.Component {
   };
 
   render() {
-    const { formErrors, isLoading, checked, title } = this.state;
-
+    const { formErrors, isLoading, checked, title, birthDate } = this.state;
     return (
       <Fragment>
         <Container component="main" maxWidth="xs">
@@ -172,11 +228,13 @@ class UserInfo extends React.Component {
                     <Select
                       labelId="demo-simple-select-label"
                       id="demo-simple-select"
-                      value={title}
-                      onChange={this.handleChange}
+                      value={title || ""}
+                      onChange={this.handleTitleChange}
                     >
                       <MenuItem value="Mr.">Mr.</MenuItem>
                       <MenuItem value="Mrs.">Mrs.</MenuItem>
+                      <MenuItem value="B. Sc.">B. Sc.</MenuItem>
+                      <MenuItem value="M. Sc.">M. Sc.</MenuItem>
                       <MenuItem value="Dr.">Dr.</MenuItem>
                       <MenuItem value="Prof. Dr.">Prof. Dr.</MenuItem>
                     </Select>
@@ -220,38 +278,134 @@ class UserInfo extends React.Component {
                   )}
                 </Grid>
                 <Grid item xs={12}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <KeyboardDatePicker
+                      disableToolbar
+                      fullWidth
+                      variant="inline"
+                      format="dd/MM/yyyy"
+                      margin="normal"
+                      id="birthDate"
+                      name="birthDate"
+                      label="Birth Date"
+                      value={birthDate}
+                      onChange={this.handleDateChange}
+                      KeyboardButtonProps={{
+                        "aria-label": "change date",
+                      }}
+                    />
+                  </MuiPickersUtilsProvider>
+                </Grid>
+
+                <Grid item xs={12}>
                   <TextField
-                    className={formErrors.email.length > 0 ? "error" : null}
+                    className={
+                      formErrors.emailPersonal.length > 0 ? "error" : null
+                    }
                     variant="outlined"
                     required
                     fullWidth
-                    id="email"
+                    id="emailPersonal"
                     label="Personal Email Address"
-                    name="email"
+                    name="emailPersonal"
                     autoComplete="email"
                     onChange={this.handleChange}
                   />
-                  {formErrors.email.length > 0 && (
+                  {formErrors.emailPersonal.length > 0 && (
                     <span className={this.props.classes.errormessage}>
-                      {formErrors.email}
+                      {formErrors.emailPersonal}
                     </span>
                   )}
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                    className={formErrors.email.length > 0 ? "error" : null}
+                    className={
+                      formErrors.emailBusiness.length > 0 ? "error" : null
+                    }
                     variant="outlined"
+                    fullWidth
+                    id="emailBusiness"
+                    label="Business Email Address"
+                    name="emailBusiness"
+                    autoComplete="email"
+                    onChange={this.handleChange}
+                  />
+                  {formErrors.emailBusiness.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.emailBusiness}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={
+                      formErrors.phonePersonal.length > 0 ? "error" : null
+                    }
+                    variant="outlined"
+                    fullWidth
+                    id="phone"
+                    label="Personal Phone Number"
+                    name="phonePersonal"
+                    autoComplete="phone"
+                    onChange={this.handleChange}
+                  />
+                  {formErrors.phonePersonal.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.phonePersonal}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={
+                      formErrors.phoneBusiness.length > 0 ? "error" : null
+                    }
+                    variant="outlined"
+                    fullWidth
                     required
-                    fullWidth
-                    id="email"
-                    label="Businness Email Address"
-                    name="email"
-                    autoComplete="email"
+                    id="phone"
+                    label="Business Phone Number"
+                    name="phoneBusiness"
+                    autoComplete="phone"
                     onChange={this.handleChange}
                   />
-                  {formErrors.email.length > 0 && (
+                  {formErrors.phoneBusiness.length > 0 && (
                     <span className={this.props.classes.errormessage}>
-                      {formErrors.email}
+                      {formErrors.phoneBusiness}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.street.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    required
+                    name="street"
+                    label="Street"
+                    id="street"
+                  />
+                  {formErrors.street.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.street}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.zipcode.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    required
+                    name="zipcode"
+                    label="Zip Code"
+                    id="zipcode"
+                  />
+                  {formErrors.zipcode.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.zipcode}
                     </span>
                   )}
                 </Grid>
@@ -260,10 +414,43 @@ class UserInfo extends React.Component {
                     onChange={this.handleChange}
                     variant="outlined"
                     fullWidth
+                    required
                     name="country"
                     label="Country"
                     id="country"
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.website.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    name="website"
+                    label="Website"
+                    id="website"
+                  />
+                  {formErrors.website.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.website}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.company.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    name="company"
+                    label="Company"
+                    id="company"
+                  />
+                  {formErrors.company.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.company}
+                    </span>
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <FormControlLabel

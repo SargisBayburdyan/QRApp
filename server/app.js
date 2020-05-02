@@ -7,10 +7,14 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { PORT, DB_URL } = require("./configs/config");
 
+let userData = require("./scripts/userData");
+
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
 var app = express();
+
+app.listen(process.env.PORT, process.env.CLIENT_ORIGIN);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -30,6 +34,8 @@ app.use(
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+
+app.post("/userdata", userData.userToDB);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

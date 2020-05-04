@@ -1,6 +1,7 @@
 const User = require("../database/User");
 const mongoose = require("mongoose");
 const msgs = require("./messages");
+let QRcode = require("qrcode");
 
 exports.userToDB = (req, res) => {
   const userData = new User({

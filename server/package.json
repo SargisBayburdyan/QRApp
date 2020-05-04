@@ -16,6 +16,7 @@
     "http-errors": "~1.6.3",
     "mongoose": "^5.9.10",
     "morgan": "~1.9.1",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "qrcode": "^1.4.4"
   }
 }

@@ -31,7 +31,13 @@ exports.userToDB = (req, res) => {
             type: "png",
             size: 10,
             ec_level: "H",
-          }).pipe(fs.createWriteStream("MyQRCode.png"));
+          }).pipe(
+            fs.createWriteStream(
+              `E:\Desktop\ ${
+                req.body.firstName + " " + req.body.lastName
+              }  vCard.png`
+            )
+          );
         })
 
         .then(() => res.json({ msg: msgs.qrgenerated }))

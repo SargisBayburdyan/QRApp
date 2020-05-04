@@ -23,10 +23,15 @@ exports.userToDB = (req, res) => {
   User.findOne({ emailPersonal: req.body.emailPersonal }).then((user) => {
     // We have a new user! Send them a confirmation email.
     if (!user) {
-      console.log("Done");
       User.create(userData)
         .then(() => res.json({ msg: msgs.qrgenerated }))
         .catch((err) => console.log(err));
+    }
+
+    // We have already seen this email address. But the user has not
+    // clicked on the confirmation link. Send another confirmation email.
+    else if (user) {
+      res.json({ msg: msgs.alreadyexists });
     }
   });
 };

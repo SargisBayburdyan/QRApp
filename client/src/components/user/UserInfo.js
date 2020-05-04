@@ -17,14 +17,12 @@ import Container from "@material-ui/core/Container";
 import { withStyles } from "@material-ui/core";
 import useStyles from "../../useStyles";
 import { notify } from "react-notify-toast";
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
+import { MuiPickersUtilsProvider, DatePicker } from "material-ui-pickers";
 import PhoneInput from "material-ui-phone-number";
 
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
+//import MomentUtils from "@date-io/moment";
 
 //Components
 import Copyright from "../Copyright";
@@ -34,10 +32,6 @@ import Spinner from "../Spinner";
 const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 );
-
-/*const phoneNumberRegex = RegExp(
-  /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g
-);*/
 
 const zipCodeRegex = RegExp(/^[0-9]{1,6}$/);
 
@@ -74,9 +68,11 @@ class UserInfo extends React.Component {
       street: null,
       zipcode: null,
       country: null,
-      birthDate: new Date(),
+      birthDate: null,
       website: null,
+      linkedin: null,
       company: null,
+
       formErrors: {
         title: "",
         firstName: "",
@@ -88,6 +84,7 @@ class UserInfo extends React.Component {
         country: "",
         birthDate: "",
         website: "",
+        linkedin: "",
         company: "",
       },
       isLoading: false,
@@ -115,8 +112,9 @@ class UserInfo extends React.Component {
       },
       body: JSON.stringify(this.state),
     })
-      .then((res) => res)
+      .then((res) => res.json())
       .then((data) => {
+        this.setState({ isLoading: false });
         notify.show(data.msg);
         this.form.reset();
       })
@@ -164,6 +162,11 @@ class UserInfo extends React.Component {
       case "website":
         formErrors.website = websiteRegex.test(value)
           ? ""
+          : "Please enter the valid URL starting with http:// or https://";
+        break;
+      case "linkedin":
+        formErrors.website = websiteRegex.test(value)
+          ? ""
           : "Please enter the valid URL";
         break;
       case "company":
@@ -184,7 +187,7 @@ class UserInfo extends React.Component {
   };
 
   handleDateChange = (date) => {
-    date = JSON.stringify(date);
+    console.log(date);
     this.setState({ birthDate: date });
   };
 
@@ -206,7 +209,7 @@ class UserInfo extends React.Component {
   };
 
   render() {
-    const { formErrors, isLoading, checked, title, birthDate } = this.state;
+    const { formErrors, isLoading, checked, title } = this.state;
     return (
       <Fragment>
         <Container component="main" maxWidth="xs">
@@ -280,9 +283,45 @@ class UserInfo extends React.Component {
                     </span>
                   )}
                 </Grid>
-                <Grid item xs={12}>
-                  <TextField type="date" fullWidth required />
-                </Grid>
+                {/*  <Grid item xs={12}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <DatePicker
+                      keyboard
+                      fullWidth
+                      required
+                      variant="outlined"
+                      label="Date of Birth"
+                      format={"dd/MM/yyyy"}
+                      mask={(value) =>
+                        value
+                          ? [
+                              /\d/,
+                              /\d/,
+                              "/",
+                              /\d/,
+                              /\d/,
+                              "/",
+                              /\d/,
+                              /\d/,
+                              /\d/,
+                              /\d/,
+                            ]
+                          : []
+                      }
+                      value={this.state.birthDate}
+                      onChange={this.handleDateChange}
+                      disableOpenOnEnter
+                      animateYearScrolling={false}
+                      autoOk={true}
+                      clearable
+                    />
+                  </MuiPickersUtilsProvider>
+                    </Grid> */}
+                {/*
+                  <Grid item xs={12}>
+                    <TextField type="date" fullWidth required />
+                  </Grid>
+                */}
                 {/*
                   <Grid item xs={12}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -426,7 +465,7 @@ class UserInfo extends React.Component {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                    className={formErrors.website.length > 0 ? "error" : null}
+                    className={formErrors.linkedin.length > 0 ? "error" : null}
                     onChange={this.handleChange}
                     variant="outlined"
                     fullWidth
@@ -434,25 +473,9 @@ class UserInfo extends React.Component {
                     label="Linkedin URL"
                     id="linkedin"
                   />
-                  {formErrors.website.length > 0 && (
+                  {formErrors.linkedin.length > 0 && (
                     <span className={this.props.classes.errormessage}>
-                      {formErrors.website}
-                    </span>
-                  )}
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    className={formErrors.website.length > 0 ? "error" : null}
-                    onChange={this.handleChange}
-                    variant="outlined"
-                    fullWidth
-                    name="website"
-                    label="Website"
-                    id="website"
-                  />
-                  {formErrors.website.length > 0 && (
-                    <span className={this.props.classes.errormessage}>
-                      {formErrors.website}
+                      {formErrors.linkedin}
                     </span>
                   )}
                 </Grid>

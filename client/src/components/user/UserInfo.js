@@ -21,6 +21,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import PhoneInput from "material-ui-phone-number";
 
 import "date-fns";
 import DateFnsUtils from "@date-io/date-fns";
@@ -34,7 +35,9 @@ const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 );
 
-const phoneNumberRegex = RegExp(/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/);
+const phoneNumberRegex = RegExp(
+  /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g
+);
 
 const zipCodeRegex = RegExp(/^[0-9]{1,6}$/);
 
@@ -80,8 +83,6 @@ class UserInfo extends React.Component {
         lastName: "",
         emailPersonal: "",
         emailBusiness: "",
-        phonePersonal: "",
-        phoneBusiness: "",
         street: "",
         zipcode: "",
         country: "",
@@ -110,7 +111,6 @@ class UserInfo extends React.Component {
     fetch("/userdata", {
       method: "POST",
       headers: {
-        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(this.state),
@@ -122,11 +122,12 @@ class UserInfo extends React.Component {
       })
       .catch((err) => console.log(err));
     this.setState({ checked: false });
+
     console.log(this.state);
   };
 
   handleChange = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
 
     const { name, value } = e.target;
     let formErrors = { ...this.state.formErrors };
@@ -150,16 +151,6 @@ class UserInfo extends React.Component {
         formErrors.emailBusiness = emailRegex.test(value)
           ? ""
           : "Please enter the valid email address";
-        break;
-      case "phonePersonal":
-        formErrors.phonePersonal = phoneNumberRegex.test(value)
-          ? ""
-          : "Please enter the valid phone number";
-        break;
-      case "numberBusiness":
-        formErrors.phoneBusiness = phoneNumberRegex.test(value)
-          ? ""
-          : "Please enter the valid phone number";
         break;
       case "street":
         formErrors.street =
@@ -200,6 +191,13 @@ class UserInfo extends React.Component {
   handleCheckboxStateChange = (e) => {
     e.preventDefault();
     this.setState({ checked: e.target.checked });
+  };
+
+  handlePhoneChange = (value) => {
+    this.setState({
+      phonePersonal: value,
+      phoneBusiness: value,
+    });
   };
 
   render() {
@@ -282,7 +280,7 @@ class UserInfo extends React.Component {
                     <KeyboardDatePicker
                       disableToolbar
                       fullWidth
-                      variant="inline"
+                      variant="outlined"
                       format="dd/MM/yyyy"
                       margin="normal"
                       id="birthDate"
@@ -337,43 +335,24 @@ class UserInfo extends React.Component {
                   )}
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    className={
-                      formErrors.phonePersonal.length > 0 ? "error" : null
-                    }
+                  <PhoneInput
                     variant="outlined"
                     fullWidth
-                    id="phone"
-                    label="Personal Phone Number"
+                    disableAreaCodes
+                    defaultCountry="de"
                     name="phonePersonal"
-                    autoComplete="phone"
-                    onChange={this.handleChange}
+                    onChange={this.handlePhoneChange}
                   />
-                  {formErrors.phonePersonal.length > 0 && (
-                    <span className={this.props.classes.errormessage}>
-                      {formErrors.phonePersonal}
-                    </span>
-                  )}
                 </Grid>
                 <Grid item xs={12}>
-                  <TextField
-                    className={
-                      formErrors.phoneBusiness.length > 0 ? "error" : null
-                    }
+                  <PhoneInput
                     variant="outlined"
                     fullWidth
-                    required
-                    id="phone"
-                    label="Business Phone Number"
+                    disableAreaCodes
+                    defaultCountry="de"
                     name="phoneBusiness"
-                    autoComplete="phone"
-                    onChange={this.handleChange}
+                    onChange={this.handlePhoneChange}
                   />
-                  {formErrors.phoneBusiness.length > 0 && (
-                    <span className={this.props.classes.errormessage}>
-                      {formErrors.phoneBusiness}
-                    </span>
-                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <TextField

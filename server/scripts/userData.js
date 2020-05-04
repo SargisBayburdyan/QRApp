@@ -23,9 +23,10 @@ exports.userToDB = (req, res) => {
   User.findOne({ emailPersonal: req.body.emailPersonal }).then((user) => {
     // We have a new user! Send them a confirmation email.
     if (!user) {
-      User.create(userData)
+      console.log("Done");
+      /* User.create(userData)
         .then(() => res.json({ msg: msgs.qrgenerated }))
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err));*/
     }
   });
 };

@@ -24,9 +24,9 @@ exports.userToDB = (req, res) => {
     // We have a new user! Send them a confirmation email.
     if (!user) {
       console.log("Done");
-      /* User.create(userData)
+      User.create(userData)
         .then(() => res.json({ msg: msgs.qrgenerated }))
-        .catch((err) => console.log(err));*/
+        .catch((err) => console.log(err));
     }
   });
 };

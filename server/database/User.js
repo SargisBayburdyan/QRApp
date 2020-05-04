@@ -14,6 +14,11 @@ let userSchema = mongoose.Schema({
     default: "",
     required: true,
   },
+  birthDate: {
+    type: String,
+    default: "",
+    required: true,
+  },
   emailPersonal: {
     type: String,
     default: "",
@@ -25,12 +30,12 @@ let userSchema = mongoose.Schema({
     required: true,
   },
   phonePersonal: {
-    type: Number,
+    type: String,
     default: "",
     required: true,
   },
   phoneBusiness: {
-    type: Number,
+    type: String,
     default: "",
     required: true,
   },
@@ -40,7 +45,7 @@ let userSchema = mongoose.Schema({
     required: true,
   },
   zipcode: {
-    type: Number,
+    type: String,
     default: "",
     required: true,
   },

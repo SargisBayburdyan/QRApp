@@ -35,9 +35,9 @@ const emailRegex = RegExp(
   /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 );
 
-const phoneNumberRegex = RegExp(
+/*const phoneNumberRegex = RegExp(
   /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/g
-);
+);*/
 
 const zipCodeRegex = RegExp(/^[0-9]{1,6}$/);
 
@@ -193,9 +193,14 @@ class UserInfo extends React.Component {
     this.setState({ checked: e.target.checked });
   };
 
-  handlePhoneChange = (value) => {
+  handlePhonePersonalChange = (value) => {
     this.setState({
       phonePersonal: value,
+    });
+  };
+
+  handlePhoneBusinessChange = (value) => {
+    this.setState({
       phoneBusiness: value,
     });
   };
@@ -276,6 +281,10 @@ class UserInfo extends React.Component {
                   )}
                 </Grid>
                 <Grid item xs={12}>
+                  <TextField type="date" fullWidth required />
+                </Grid>
+                {/*
+                  <Grid item xs={12}>
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
                     <KeyboardDatePicker
                       disableToolbar
@@ -294,7 +303,7 @@ class UserInfo extends React.Component {
                     />
                   </MuiPickersUtilsProvider>
                 </Grid>
-
+                */}
                 <Grid item xs={12}>
                   <TextField
                     className={
@@ -341,7 +350,7 @@ class UserInfo extends React.Component {
                     disableAreaCodes
                     defaultCountry="de"
                     name="phonePersonal"
-                    onChange={this.handlePhoneChange}
+                    onChange={this.handlePhonePersonalChange}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -351,7 +360,7 @@ class UserInfo extends React.Component {
                     disableAreaCodes
                     defaultCountry="de"
                     name="phoneBusiness"
-                    onChange={this.handlePhoneChange}
+                    onChange={this.handlePhoneBusinessChange}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -398,6 +407,38 @@ class UserInfo extends React.Component {
                     label="Country"
                     id="country"
                   />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.website.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    name="website"
+                    label="Website"
+                    id="website"
+                  />
+                  {formErrors.website.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.website}
+                    </span>
+                  )}
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    className={formErrors.website.length > 0 ? "error" : null}
+                    onChange={this.handleChange}
+                    variant="outlined"
+                    fullWidth
+                    name="linkedin"
+                    label="Linkedin URL"
+                    id="linkedin"
+                  />
+                  {formErrors.website.length > 0 && (
+                    <span className={this.props.classes.errormessage}>
+                      {formErrors.website}
+                    </span>
+                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <TextField

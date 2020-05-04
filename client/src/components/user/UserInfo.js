@@ -72,7 +72,6 @@ class UserInfo extends React.Component {
       website: null,
       linkedin: null,
       company: null,
-
       formErrors: {
         title: "",
         firstName: "",
@@ -165,7 +164,7 @@ class UserInfo extends React.Component {
           : "Please enter the valid URL starting with http:// or https://";
         break;
       case "linkedin":
-        formErrors.website = websiteRegex.test(value)
+        formErrors.linkedin = websiteRegex.test(value)
           ? ""
           : "Please enter the valid URL";
         break;

@@ -1,7 +1,8 @@
 const User = require("../database/User");
 const mongoose = require("mongoose");
 const msgs = require("./messages");
-let QRcode = require("qrcode");
+let QRCode = require("qr-image");
+let fs = require("fs");
 
 exports.userToDB = (req, res) => {
   const userData = new User({
@@ -25,13 +26,17 @@ exports.userToDB = (req, res) => {
     // We have a new user! Send them a confirmation email.
     if (!user) {
       User.create(userData)
+        .then(() => {
+          QRCode.image(JSON.stringify(userData), {
+            type: "png",
+            size: 10,
+            ec_level: "H",
+          }).pipe(fs.createWriteStream("MyQRCode.png"));
+        })
+
         .then(() => res.json({ msg: msgs.qrgenerated }))
         .catch((err) => console.log(err));
-    }
-
-    // We have already seen this email address. But the user has not
-    // clicked on the confirmation link. Send another confirmation email.
-    else if (user) {
+    } else if (user) {
       res.json({ msg: msgs.alreadyexists });
     }
   });

@@ -47,6 +47,9 @@ const useStyles = (theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  qrcode: {
+    textAlign: "center",
+  },
 });
 
 export default useStyles;

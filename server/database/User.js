@@ -4,6 +4,16 @@ const String = mongoose.SchemaTypes.String;
 //users collection
 let userSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
+  username: {
+    type: String,
+    default: "",
+    required: true,
+  },
+  password: {
+    type: String,
+    default: "",
+    required: true,
+  },
   firstName: {
     type: String,
     default: "",
@@ -14,55 +24,14 @@ let userSchema = mongoose.Schema({
     default: "",
     required: true,
   },
-  birthDate: {
-    type: String,
-    default: "",
-    required: false,
-  },
-  emailPersonal: {
+  email: {
     type: String,
     default: "",
     required: true,
   },
-  emailBusiness: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  phonePersonal: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  phoneBusiness: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  street: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  zipcode: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  country: {
-    type: String,
-    default: "",
-    required: true,
-  },
-  website: {
-    type: String,
-    default: "",
-    required: false,
-  },
-  company: {
-    type: String,
-    default: "",
-    required: false,
+  confirmed: {
+    type: Boolean,
+    default: false,
   },
   timestamp: {
     type: Date,

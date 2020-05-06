@@ -1,6 +1,12 @@
 //Server listening on port
 exports.PORT = process.env.PORT || 5000;
 
+//Client URL
+exports.CLIENT_ORIGIN =
+  process.env.NODE_ENV === "production"
+    ? process.env.CLIENT_ORIGIN
+    : "http://localhost:3000";
+
 //Database URL
 exports.DB_URL =
   process.env.NODE_ENV === "production"

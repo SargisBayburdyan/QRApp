@@ -1,6 +1,8 @@
 import React, { Fragment } from "react";
 
 import User from "./components/user/UserInfo";
+import Signup from "./components/signup/Signup";
+import ConfirmSignup from "./components/signup/ConfirmSignup";
 
 export default class Routes extends React.Component {
   render() {
@@ -11,8 +13,12 @@ export default class Routes extends React.Component {
         <main>
           {(function () {
             switch (params.pageName) {
-              case "user":
+              case "vcard":
                 return <User />;
+              case "signup":
+                return <Signup />;
+              case "signup/confirm/:id":
+                return <ConfirmSignup />;
               default:
                 return null;
             }

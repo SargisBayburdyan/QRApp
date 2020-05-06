@@ -19,7 +19,7 @@ export default class App extends React.Component {
               exact
               path="/"
               render={() => {
-                return <Redirect to="/user" />;
+                return <Redirect to="/signup" />;
               }}
             />
             <Switch>

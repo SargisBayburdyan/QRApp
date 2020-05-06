@@ -6,6 +6,7 @@ var logger = require("morgan");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const { PORT, DB_URL } = require("./configs/config");
+const signupConfirm = require("./scripts/signup/signupConfirm");
 
 let userData = require("./scripts/userData");
 
@@ -36,6 +37,10 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 app.post("/userdata", userData.userToDB);
+
+app.post("/signup", signupConfirm.signupData);
+
+app.get("/signup/confirm/:id", signupConfirm.confirmEmail);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

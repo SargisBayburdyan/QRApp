@@ -1,11 +1,11 @@
-const User = require("../database/User");
+const UserCard = require("../database/UserCard");
 const mongoose = require("mongoose");
 const msgs = require("./messages");
 let QRCode = require("qr-image");
 let fs = require("fs");
 
 exports.userToDB = (req, res) => {
-  const userData = new User({
+  const userCardData = new UserCard({
     _id: new mongoose.Types.ObjectId(),
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -20,30 +20,30 @@ exports.userToDB = (req, res) => {
     company: req.body.company,
   });
 
-  console.log(userData);
+  console.log(userCardData);
 
-  User.findOne({ emailPersonal: req.body.emailPersonal }).then((user) => {
-    // We have a new user! Send them a confirmation email.
-    if (!user) {
-      User.create(userData)
-        .then(() => {
-          QRCode.image(JSON.stringify(userData), {
-            type: "png",
-            size: 10,
-            ec_level: "H",
-          }).pipe(
-            fs.createWriteStream(
-              `E:\Desktop\ ${
-                req.body.firstName + " " + req.body.lastName
-              }  vCard.png`
-            )
-          );
-        })
+  UserCard.findOne({ emailPersonal: req.body.emailPersonal }).then(
+    (userCard) => {
+      // We have a new user! Send them a confirmation email.
+      if (!userCard) {
+        UserCard.create(userCardData)
+          .then(() => {
+            QRCode.image(JSON.stringify(userCardData), {
+              type: "png",
+              size: 5,
+              ec_level: "H",
+            }).pipe(
+              fs.createWriteStream(
+                `${req.body.firstName + " " + req.body.lastName}  vCard.png`
+              )
+            );
+          })
 
-        .then(() => res.json({ msg: msgs.qrgenerated }))
-        .catch((err) => console.log(err));
-    } else if (user) {
-      res.json({ msg: msgs.alreadyexists });
+          .then(() => res.json({ msg: msgs.qrgenerated }))
+          .catch((err) => console.log(err));
+      } else if (user) {
+        res.json({ msg: msgs.alreadyexists });
+      }
     }
-  });
+  );
 };

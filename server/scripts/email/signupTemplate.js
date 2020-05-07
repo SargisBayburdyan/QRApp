@@ -5,10 +5,10 @@ module.exports = {
   confirm: (id) => ({
     subject: "Welcome to Qard. Please confirm your email for Signup",
     html: `
-      <a href='${CLIENT_ORIGIN}/#/signup/confirm/${id}'>
+      <a href='${CLIENT_ORIGIN}/#/confirm/${id}'>
         Click here for Confirmation
       </a>
     `,
-    text: `Copy and paste this link: ${CLIENT_ORIGIN}/#/signup/confirm/${id}`,
+    text: `Copy and paste this link: ${CLIENT_ORIGIN}/#/confirm/${id}`,
   }),
 };
